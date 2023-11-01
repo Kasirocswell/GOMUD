@@ -159,36 +159,57 @@ func (u *User) DisplayAttributes() string {
 func (u *User) SpawnInUniverse(universe *Universe) {
 	switch u.Class {
 	case Soldier:
-		u.Galaxy = universe.GetGalaxy("Milky Way")
-		u.Planet = universe.GetPlanet("Milky Way", "Earth")
-		u.City = universe.GetCity("Milky Way", "Earth", "Military Base")
-		u.Room = universe.GetRoom("Milky Way", "Earth", "Military Base", "Barracks")
+		u.Galaxy = universe.GetGalaxy("CyberCluster")
+		u.Planet = universe.GetPlanet("CyberCluster", "Techterra")
+		u.City = universe.GetCity("CyberCluster", "Techterra", "NeoTokyo")
+		u.Room = universe.GetRoom("CyberCluster", "Techterra", "NeoTokyo", "Barracks")
 	case Medic:
-		u.Galaxy = universe.GetGalaxy("Andromeda")
-		u.Planet = universe.GetPlanet("Andromeda", "Healix")
-		u.City = universe.GetCity("Andromeda", "Healix", "Medic Central")
-		u.Room = universe.GetRoom("Andromeda", "Healix", "Medic Central", "Infirmary")
+		u.Galaxy = universe.GetGalaxy("DigitalDomain")
+		u.Planet = universe.GetPlanet("DigitalDomain", "SiliconSphere")
+		u.City = universe.GetCity("DigitalDomain", "SiliconSphere", "SiliconParis")
+		u.Room = universe.GetRoom("DigitalDomain", "SiliconSphere", "SiliconParis", "Hospital")
 	case Pilot:
-		u.Galaxy = universe.GetGalaxy("Nebula X")
-		u.Planet = universe.GetPlanet("Nebula X", "Skytopia")
-		u.City = universe.GetCity("Nebula X", "Skytopia", "Pilot's Haven")
-		u.Room = universe.GetRoom("Nebula X", "Skytopia", "Pilot's Haven", "Hangar")
+		u.Galaxy = universe.GetGalaxy("NetNebula")
+		u.Planet = universe.GetPlanet("NetNebula", "NetNeptune")
+		u.City = universe.GetCity("NetNebula", "NetNeptune", "NeptuneCity1")
+		u.Room = universe.GetRoom("NetNebula", "NetNeptune", "NeptuneCity1", "Seedy Bar")
 	case Engineer:
-		u.Galaxy = universe.GetGalaxy("Techno Realm")
-		u.Planet = universe.GetPlanet("Techno Realm", "Gearland")
-		u.City = universe.GetCity("Techno Realm", "Gearland", "Engineer's Enclave")
-		u.Room = universe.GetRoom("Techno Realm", "Gearland", "Engineer's Enclave", "Workshop")
+		u.Galaxy = universe.GetGalaxy("TechTwilight")
+		u.Planet = universe.GetPlanet("TechTwilight", "Digitalis")
+		u.City = universe.GetCity("TechTwilight", "Digitalis", "DigitalisCity1")
+		u.Room = universe.GetRoom("TechTwilight", "Digitalis", "DigitalisCity1", "Local Shop")
 	case Entrepreneur:
-		u.Galaxy = universe.GetGalaxy("Golden Cluster")
-		u.Planet = universe.GetPlanet("Golden Cluster", "Marketron")
-		u.City = universe.GetCity("Golden Cluster", "Marketron", "Trade Town")
-		u.Room = universe.GetRoom("Golden Cluster", "Marketron", "Trade Town", "Marketplace")
+		u.Galaxy = universe.GetGalaxy("CyberCluster")
+		u.Planet = universe.GetPlanet("CyberCluster", "Techterra")
+		u.City = universe.GetCity("CyberCluster", "Techterra", "CyberLisbon")
+		u.Room = universe.GetRoom("CyberCluster", "Techterra", "CyberLisbon", "Town Square")
 	default:
 		// Default spawn location if none of the above classes match.
-		u.Galaxy = universe.GetGalaxy("Milky Way")
-		u.Planet = universe.GetPlanet("Milky Way", "Earth")
-		u.City = universe.GetCity("Milky Way", "Earth", "Downtown")
-		u.Room = universe.GetRoom("Milky Way", "Earth", "Downtown", "Central Square")
+		u.Galaxy = universe.GetGalaxy("CyberCluster")
+		u.Planet = universe.GetPlanet("CyberCluster", "Techterra")
+		u.City = universe.GetCity("CyberCluster", "Techterra", "NeoTokyo")
+		u.Room = universe.GetRoom("CyberCluster", "Techterra", "NeoTokyo", "Town Square")
+	}
+
+	// Debugging statements to print out the user's location details
+	fmt.Printf("DEBUG: User Class: %s\n", u.Class)
+	fmt.Printf("DEBUG: Galaxy: %v\n", u.Galaxy)
+	fmt.Printf("DEBUG: Planet: %v\n", u.Planet)
+	fmt.Printf("DEBUG: City: %v\n", u.City)
+	fmt.Printf("DEBUG: Room: %v\n", u.Room)
+
+	// Check if any of the locations are nil
+	if u.Galaxy == nil {
+		fmt.Println("DEBUG: Galaxy is nil!")
+	}
+	if u.Planet == nil {
+		fmt.Println("DEBUG: Planet is nil!")
+	}
+	if u.City == nil {
+		fmt.Println("DEBUG: City is nil!")
+	}
+	if u.Room == nil {
+		fmt.Println("DEBUG: Room is nil!")
 	}
 }
 
