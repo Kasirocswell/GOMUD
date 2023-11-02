@@ -18,10 +18,10 @@ func HandleCommand(user *models.User, command string) {
 	case "look":
 		if user.Room == nil {
 			user.Writer.WriteString("You are in an unknown location.\n")
-		} else if user.City == nil || user.Planet == nil {
-			user.Writer.WriteString("Unable to determine your exact location.\n")
 		} else {
-			user.Writer.WriteString(user.Room.Description(user.City.Name, user.Planet.Name) + "\n")
+			// Construct the location description based on the user's current position
+			locationDescription := getLocationDescription(user)
+			user.Writer.WriteString(locationDescription + "\n")
 		}
 	case "n", "north", "s", "south", "e", "east", "w", "west", "enter", "exit":
 		move(user, strings.ToLower(command))
@@ -35,23 +35,50 @@ func HandleCommand(user *models.User, command string) {
 func move(user *models.User, direction string) {
 	if user.Room == nil {
 		user.Writer.WriteString("You are in an unknown location and cannot move.\n")
+		user.Writer.Flush()
 		return
 	}
 
-	if exit, ok := user.Room.Exits[direction]; ok {
-		user.Room = exit
-		if user.Room == nil {
-			user.Writer.WriteString("You move to an unknown location.\n")
-			return
-		}
-		user.Writer.WriteString("You move " + direction + " to " + user.Room.Name + ".\n")
-		if user.City != nil && user.Planet != nil {
-			user.Writer.WriteString(user.Room.Description(user.City.Name, user.Planet.Name) + "\n")
-		} else {
-			user.Writer.WriteString("Unable to determine your exact location after moving.\n")
-		}
-	} else {
+	var nextRoom *models.Room
+	switch direction {
+	case "n", "north":
+		nextRoom = user.Room.N
+	case "s", "south":
+		nextRoom = user.Room.S
+	case "e", "east":
+		nextRoom = user.Room.E
+	case "w", "west":
+		nextRoom = user.Room.W
+	}
+
+	if nextRoom == nil {
 		user.Writer.WriteString("There's no exit in that direction.\n")
+	} else {
+		user.Room = nextRoom
+		user.Writer.WriteString("You move " + direction + " to " + user.Room.Name + ".\n")
+		// Update the room description with the new location
+		locationDescription := getLocationDescription(user)
+		user.Writer.WriteString(locationDescription + "\n")
 	}
 	user.Writer.Flush()
+}
+
+// getLocationDescription constructs a string that describes the user's current location.
+func getLocationDescription(user *models.User) string {
+	galaxyName := "Unknown Galaxy"
+	planetName := "Unknown Planet"
+	cityName := "Unknown City"
+
+	if user.Galaxy != nil {
+		galaxyName = user.Galaxy.Name
+	}
+	if user.Planet != nil {
+		planetName = user.Planet.Name
+	}
+	if user.City != nil {
+		cityName = user.City.Name
+	}
+
+	// Call the Description method with the current location names
+	return user.Room.Description(galaxyName, planetName, cityName)
 }

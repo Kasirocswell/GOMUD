@@ -20,20 +20,20 @@ type Race string
 
 const (
 	Human     Race = "Human"
-	Draconian      = "Draconian"
-	Cyborg         = "Cyborg"
-	Uthalu         = "Uthalu"
-	Drogan         = "Drogan"
+	Draconian Race = "Draconian"
+	Cyborg    Race = "Cyborg"
+	Uthalu    Race = "Uthalu"
+	Drogan    Race = "Drogan"
 )
 
 type Class string
 
 const (
 	Soldier      Class = "Soldier"
-	Medic              = "Medic"
-	Pilot              = "Pilot"
-	Engineer           = "Engineer"
-	Entrepreneur       = "Entrepreneur"
+	Medic        Class = "Medic"
+	Pilot        Class = "Pilot"
+	Engineer     Class = "Engineer"
+	Entrepreneur Class = "Entrepreneur"
 )
 
 type Attributes struct {
@@ -74,7 +74,6 @@ func NewUser(conn net.Conn, r *bufio.Reader, w *bufio.Writer) *User {
 	}
 }
 
-// SetRace sets the user's race and handles invalid input.
 // SetRace sets the user's race and handles invalid input.
 func (u *User) SetRace(raceChoice string) error {
 	switch Race(raceChoice) {
@@ -191,13 +190,6 @@ func (u *User) SpawnInUniverse(universe *Universe) {
 		u.Room = universe.GetRoom("CyberCluster", "Techterra", "NeoTokyo", "Town Square")
 	}
 
-	// Debugging statements to print out the user's location details
-	fmt.Printf("DEBUG: User Class: %s\n", u.Class)
-	fmt.Printf("DEBUG: Galaxy: %v\n", u.Galaxy)
-	fmt.Printf("DEBUG: Planet: %v\n", u.Planet)
-	fmt.Printf("DEBUG: City: %v\n", u.City)
-	fmt.Printf("DEBUG: Room: %v\n", u.Room)
-
 	// Check if any of the locations are nil
 	if u.Galaxy == nil {
 		fmt.Println("DEBUG: Galaxy is nil!")
@@ -220,38 +212,4 @@ func (u *User) ReadInput() (string, error) {
 		return "", err
 	}
 	return strings.TrimSpace(input), nil
-}
-
-// User Commands
-func (u *User) HandleCommand(command string) {
-	switch command {
-	case "look":
-		u.Writer.WriteString(u.Room.Description(u.City.Name, u.Planet.Name) + "\n")
-	case "n", "north":
-		u.move("north")
-	case "s", "south":
-		u.move("south")
-	case "e", "east":
-		u.move("east")
-	case "w", "west":
-		u.move("west")
-	case "enter":
-		u.move("enter_building") // or whatever key you use for entering
-	case "exit":
-		u.move("exit") // or whatever key you use for exiting
-	default:
-		u.Writer.WriteString("Unknown command.\n")
-	}
-	u.Writer.Flush()
-}
-
-func (u *User) move(direction string) {
-	if exit, ok := u.Room.Exits[direction]; ok {
-		u.Room = exit
-		u.Writer.WriteString("You move " + direction + " to " + u.Room.Name + ".\n")
-		u.Writer.WriteString(u.Room.Description(u.City.Name, u.Planet.Name) + "\n")
-	} else {
-		u.Writer.WriteString("There's no exit in that direction.\n")
-	}
-	u.Writer.Flush()
 }

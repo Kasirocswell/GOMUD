@@ -1,79 +1,43 @@
-// universe.go
 package models
 
-import (
-	"fmt"
-)
+// Import necessary packages
 
 // Universe structure
 type Universe struct {
 	Galaxies map[string]*Galaxy
 }
 
+// NewUniverse creates a new Universe instance.
+func NewUniverse() *Universe {
+	return &Universe{
+		Galaxies: make(map[string]*Galaxy),
+	}
+}
+
+// CreateUniverse initializes the universe with galaxies, planets, and cities.
 func CreateUniverse() *Universe {
 	// Define common rooms
-	commonRooms := map[string]*Room{
-		"Barracks":    CreateCommonRoom("Barracks", "A military facility in %s, %s where soldiers train and rest."),
-		"Hospital":    CreateCommonRoom("Hospital", "A medical facility in %s, %s where the injured are treated."),
-		"Seedy Bar":   CreateCommonRoom("Seedy Bar", "A dimly lit bar in %s, %s, filled with pilots and shady characters."),
-		"Local Shop":  CreateCommonRoom("Local Shop", "A shop in %s, %s where entrepreneurs sell various goods."),
-		"Town Square": CreateCommonRoom("Town Square", "The heart of %s, %s, bustling with activity."),
-	}
-
-	// Define unique rooms for each city
-	uniqueRoomsForNeoTokyo := map[string]*Room{
-		"NeoTokyo Tower": CreateUniqueRoom("NeoTokyo Tower", "A towering skyscraper offering a panoramic view of NeoTokyo."),
-	}
-
-	uniqueRoomsForCyberLisbon := map[string]*Room{
-		"Cyber Cafe": CreateUniqueRoom("Cyber Cafe", "A popular cafe in CyberLisbon known for its digital espresso."),
-	}
-
-	uniqueRoomsForSiliconParis := map[string]*Room{
-		"Silicon Museum": CreateUniqueRoom("Silicon Museum", "A museum in SiliconParis showcasing the history of technology."),
-	}
-
-	uniqueRoomsForDigitalDelhi := map[string]*Room{
-		"Digital Market": CreateUniqueRoom("Digital Market", "A bustling market in DigitalDelhi with various digital goods and services."),
-	}
-
-	// Cities for Digitalis
-	uniqueRoomsForDigitalisCity1 := map[string]*Room{
-		"Digitalis Park": CreateUniqueRoom("Digitalis Park", "A serene park in the heart of the city."),
-	}
-
-	uniqueRoomsForDigitalisCity2 := map[string]*Room{
-		"Digitalis Library": CreateUniqueRoom("Digitalis Library", "A vast library with digital archives."),
-	}
-
-	// Cities for NetNeptune
-	uniqueRoomsForNeptuneCity1 := map[string]*Room{
-		"Neptune Beach": CreateUniqueRoom("Neptune Beach", "A beautiful beach with glowing sands."),
-	}
-
-	uniqueRoomsForNeptuneCity2 := map[string]*Room{
-		"Neptune Observatory": CreateUniqueRoom("Neptune Observatory", "A place to observe the vastness of the universe."),
-	}
+	commonRooms := InitializeRooms()
 
 	// Create cities for each planet
 	citiesForTechterra := map[string]*City{
-		"NeoTokyo":    createCity("NeoTokyo", commonRooms, uniqueRoomsForNeoTokyo),
-		"CyberLisbon": createCity("CyberLisbon", commonRooms, uniqueRoomsForCyberLisbon),
+		"NeoTokyo":    createCity("NeoTokyo", commonRooms),
+		"CyberLisbon": createCity("CyberLisbon", commonRooms),
 	}
 
 	citiesForSiliconSphere := map[string]*City{
-		"SiliconParis": createCity("SiliconParis", commonRooms, uniqueRoomsForSiliconParis),
-		"DigitalDelhi": createCity("DigitalDelhi", commonRooms, uniqueRoomsForDigitalDelhi),
+		"SiliconParis": createCity("SiliconParis", commonRooms),
+		"DigitalDelhi": createCity("DigitalDelhi", commonRooms),
 	}
 
 	citiesForDigitalis := map[string]*City{
-		"DigitalisCity1": createCity("DigitalisCity1", commonRooms, uniqueRoomsForDigitalisCity1),
-		"DigitalisCity2": createCity("DigitalisCity2", commonRooms, uniqueRoomsForDigitalisCity2),
+		"DigitalisCity1": createCity("DigitalisCity1", commonRooms),
+		"DigitalisCity2": createCity("DigitalisCity2", commonRooms),
 	}
 
 	citiesForNetNeptune := map[string]*City{
-		"NeptuneCity1": createCity("NeptuneCity1", commonRooms, uniqueRoomsForNeptuneCity1),
-		"NeptuneCity2": createCity("NeptuneCity2", commonRooms, uniqueRoomsForNeptuneCity2),
+		"NeptuneCity1": createCity("NeptuneCity1", commonRooms),
+		"NeptuneCity2": createCity("NeptuneCity2", commonRooms),
 	}
 
 	// Create planets with their own set of cities
@@ -85,10 +49,11 @@ func CreateUniverse() *Universe {
 	}
 
 	// Create galaxies with planets
-	galaxyNames := []string{"CyberCluster", "DigitalDomain", "NetNebula", "TechTwilight"}
-	galaxies := make(map[string]*Galaxy)
-	for _, galaxyName := range galaxyNames {
-		galaxies[galaxyName] = createGalaxy(galaxyName, planets)
+	galaxies := map[string]*Galaxy{
+		"CyberCluster":  createGalaxy("CyberCluster", map[string]*Planet{"Techterra": planets["Techterra"]}),
+		"DigitalDomain": createGalaxy("DigitalDomain", map[string]*Planet{"SiliconSphere": planets["SiliconSphere"]}),
+		"NetNebula":     createGalaxy("NetNebula", map[string]*Planet{"Digitalis": planets["Digitalis"]}),
+		"TechTwilight":  createGalaxy("TechTwilight", map[string]*Planet{"NetNeptune": planets["NetNeptune"]}),
 	}
 
 	// Create universe with galaxies
@@ -97,34 +62,32 @@ func CreateUniverse() *Universe {
 	}
 }
 
+// GetGalaxy retrieves a galaxy by its name from the universe.
 func (u *Universe) GetGalaxy(name string) *Galaxy {
-	galaxy, ok := u.Galaxies[name]
-	if !ok {
-		fmt.Printf("DEBUG: Galaxy %s not found.\n", name)
-	}
-	return galaxy
-}
-
-func (u *Universe) GetPlanet(galaxyName, planetName string) *Planet {
-	galaxy := u.GetGalaxy(galaxyName)
-	if galaxy != nil {
-		planet, ok := galaxy.Planets[planetName]
-		if !ok {
-			fmt.Printf("DEBUG: Planet %s not found in Galaxy %s.\n", planetName, galaxyName)
-		}
-		return planet
+	if galaxy, ok := u.Galaxies[name]; ok {
+		return galaxy
 	}
 	return nil
 }
 
+// GetPlanet retrieves a planet by its name from a specified galaxy.
+func (u *Universe) GetPlanet(galaxyName, planetName string) *Planet {
+	galaxy := u.GetGalaxy(galaxyName)
+	if galaxy != nil {
+		if planet, ok := galaxy.Planets[planetName]; ok {
+			return planet
+		}
+	}
+	return nil
+}
+
+// GetCity retrieves a city by its name from a specified planet in a specified galaxy.
 func (u *Universe) GetCity(galaxyName, planetName, cityName string) *City {
 	planet := u.GetPlanet(galaxyName, planetName)
 	if planet != nil {
-		city, ok := planet.Cities[cityName]
-		if !ok {
-			fmt.Printf("DEBUG: City %s not found on Planet %s in Galaxy %s.\n", cityName, planetName, galaxyName)
+		if city, ok := planet.Cities[cityName]; ok {
+			return city
 		}
-		return city
 	}
 	return nil
 }
@@ -134,11 +97,8 @@ func (u *Universe) GetRoom(galaxyName, planetName, cityName, roomName string) *R
 	city := u.GetCity(galaxyName, planetName, cityName)
 	if city != nil {
 		if room, ok := city.Rooms[roomName]; ok {
-			fmt.Printf("DEBUG: Galaxy %s not found.\n", roomName)
 			return room
 		}
 	}
-	fmt.Printf("DEBUG: Galaxy %s not found.\n", roomName)
-
 	return nil
 }

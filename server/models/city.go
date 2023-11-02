@@ -7,16 +7,10 @@ type City struct {
 	Rooms map[string]*Room
 }
 
-func createCity(name string, commonRooms, uniqueRooms map[string]*Room) *City {
+// createCity creates a new city with the given name and common rooms.
+func createCity(name string, commonRooms map[string]*Room) *City {
 	cityRooms := make(map[string]*Room)
 	for roomName, room := range commonRooms {
-		cityRooms[roomName] = &Room{
-			Name:                room.Name,
-			DescriptionTemplate: room.DescriptionTemplate,
-			Users:               make(map[*User]bool),
-		}
-	}
-	for roomName, room := range uniqueRooms {
 		cityRooms[roomName] = room
 	}
 	return &City{
