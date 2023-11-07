@@ -14,30 +14,40 @@ func NewUniverse() *Universe {
 	}
 }
 
-// CreateUniverse initializes the universe with galaxies, planets, and cities.
+// CreateUniverse initializes the universe with its galaxies, planets, and cities.
 func CreateUniverse() *Universe {
 	// Define common rooms
-	commonRooms := InitializeRooms()
+	commonRooms := InitializeCommonRooms()
 
-	// Create cities for each planet
+	// Initialize unique rooms for each city
+	uniqueRoomsForNeoTokyo := InitializeUniqueRooms("NeoTokyo")
+	uniqueRoomsForCyberLisbon := InitializeUniqueRooms("CyberLisbon")
+	uniqueRoomsForSiliconParis := InitializeUniqueRooms("SiliconParis")
+	uniqueRoomsForDigitalDelhi := InitializeUniqueRooms("DigitalDelhi")
+	uniqueRoomsForDigitalisCity1 := InitializeUniqueRooms("DigitalisCity1")
+	uniqueRoomsForDigitalisCity2 := InitializeUniqueRooms("DigitalisCity2")
+	uniqueRoomsForNeptuneCity1 := InitializeUniqueRooms("NeptuneCity1")
+	uniqueRoomsForNeptuneCity2 := InitializeUniqueRooms("NeptuneCity2")
+
+	// Create cities with common and unique rooms for each planet
 	citiesForTechterra := map[string]*City{
-		"NeoTokyo":    createCity("NeoTokyo", commonRooms),
-		"CyberLisbon": createCity("CyberLisbon", commonRooms),
+		"NeoTokyo":    createCity("NeoTokyo", commonRooms, uniqueRoomsForNeoTokyo),
+		"CyberLisbon": createCity("CyberLisbon", commonRooms, uniqueRoomsForCyberLisbon),
 	}
 
 	citiesForSiliconSphere := map[string]*City{
-		"SiliconParis": createCity("SiliconParis", commonRooms),
-		"DigitalDelhi": createCity("DigitalDelhi", commonRooms),
+		"SiliconParis": createCity("SiliconParis", commonRooms, uniqueRoomsForSiliconParis),
+		"DigitalDelhi": createCity("DigitalDelhi", commonRooms, uniqueRoomsForDigitalDelhi),
 	}
 
 	citiesForDigitalis := map[string]*City{
-		"DigitalisCity1": createCity("DigitalisCity1", commonRooms),
-		"DigitalisCity2": createCity("DigitalisCity2", commonRooms),
+		"DigitalisCity1": createCity("DigitalisCity1", commonRooms, uniqueRoomsForDigitalisCity1),
+		"DigitalisCity2": createCity("DigitalisCity2", commonRooms, uniqueRoomsForDigitalisCity2),
 	}
 
 	citiesForNetNeptune := map[string]*City{
-		"NeptuneCity1": createCity("NeptuneCity1", commonRooms),
-		"NeptuneCity2": createCity("NeptuneCity2", commonRooms),
+		"NeptuneCity1": createCity("NeptuneCity1", commonRooms, uniqueRoomsForNeptuneCity1),
+		"NeptuneCity2": createCity("NeptuneCity2", commonRooms, uniqueRoomsForNeptuneCity2),
 	}
 
 	// Create planets with their own set of cities
@@ -51,10 +61,17 @@ func CreateUniverse() *Universe {
 	// Create galaxies with planets
 	galaxies := map[string]*Galaxy{
 		"CyberCluster":  createGalaxy("CyberCluster", map[string]*Planet{"Techterra": planets["Techterra"]}),
-		"DigitalDomain": createGalaxy("DigitalDomain", map[string]*Planet{"SiliconSphere": planets["SiliconSphere"]}),
-		"NetNebula":     createGalaxy("NetNebula", map[string]*Planet{"Digitalis": planets["Digitalis"]}),
-		"TechTwilight":  createGalaxy("TechTwilight", map[string]*Planet{"NetNeptune": planets["NetNeptune"]}),
+		"SiliconDomain": createGalaxy("SiliconDomain", map[string]*Planet{"SiliconSphere": planets["SiliconSphere"]}),
+		"DataDell":      createGalaxy("DataDell", map[string]*Planet{"Digitalis": planets["Digitalis"]}),
+		"NeptuneNest":   createGalaxy("NeptuneNest", map[string]*Planet{"NetNeptune": planets["NetNeptune"]}),
 	}
+
+	// Link unique rooms within cities if necessary
+	// For example, if you have a secret passage from the Secret Lab to the Armory in NeoTokyo
+	// citiesForTechterra["NeoTokyo"].Rooms["Secret Lab"].Enter = citiesForTechterra["NeoTokyo"].Rooms["Armory"]
+	// citiesForTechterra["NeoTokyo"].Rooms["Armory"].Exit = citiesForTechterra["NeoTokyo"].Rooms["Secret Lab"]
+
+	// ... Link unique rooms for other cities similarly
 
 	// Create universe with galaxies
 	return &Universe{
