@@ -1,0 +1,20 @@
+[
+    {
+    "ID": "pulse-armory-owner",
+    "Name": "Kaito Takahashi",
+    "Description": "Kaito Takahashi is the proprietor of Pulse Armory in Neo-Tokyo. A veteran with a wealth of experience in both combat and weaponry, Kaito has a calm demeanor and sharp eyes that miss nothing. His shop is renowned for its high-quality, futuristic weapons, and Kaito is always ready to offer his expert advice or share stories from his adventures.",
+    "Race": "Human",
+    "Class": "Merchant",
+    "Health": 100,
+    "MaxHealth": 100,
+    "Attributes": {"intelligence": 18, "wisdom": 20},
+    "Skills": {"alchemy": 15, "history": 20},
+    "Inventory": [],
+    "Equipment": {},
+    "AIType": "friendly",
+    "Dialogue": ["Welcome to Pulse Armory, the best place in Neo-Tokyo for cutting-edge weapons.", "Looking for something special? I'm sure I can help you.", "Each weapon here has its own story. Care to hear one?"],
+    "Quests": ["quest_for_knowledge"],
+    "LocationID": "pulse-armory-neotokyo"
+}
+]
+

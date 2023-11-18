@@ -6,11 +6,11 @@ import (
 	"bufio"
 	"fmt"
 	"net"
+	"strings"
 
 	"github.com/kasirocswell/gomudserver/models"
 )
 
-// HandleNewConnection manages a new user connection.
 func HandleNewConnection(conn net.Conn, universe *models.Universe) {
 	defer conn.Close()
 
@@ -31,7 +31,6 @@ func HandleNewConnection(conn net.Conn, universe *models.Universe) {
 			fmt.Println("Error reading input:", err)
 			return
 		}
-
 		switch user.State {
 		case models.CharacterCreation:
 			if user.Name == "" {
@@ -101,15 +100,36 @@ func HandleNewConnection(conn net.Conn, universe *models.Universe) {
 				}
 			} else {
 				user.State = models.InGame
+				// Extract command and arguments
+				command, args := parseCommand(input)
+				HandleCommand(user, command, universe, args...)
 				user.SpawnInUniverse(universe)
 				user.Writer.WriteString(fmt.Sprintf("You have been spawned in %s, %s on planet %s in the %s galaxy.\n", user.Room.Name, user.City.Name, user.Planet.Name, user.Galaxy.Name))
 				user.Writer.Flush()
 			}
 		case models.InGame:
 			// Handle in-game commands using the abstracted function
-			HandleCommand(user, input)
+			command, args := parseCommand(input)
+			HandleCommand(user, command, universe, args...)
+
 		}
 	}
+}
+
+// parseCommand splits a command string into the command itself and additional arguments.
+func parseCommand(input string) (string, []string) {
+	parts := strings.Fields(input)
+	if len(parts) == 0 {
+		return "", nil
+	}
+
+	command := parts[0]
+	args := []string{}
+	if len(parts) > 1 {
+		args = parts[1:]
+	}
+
+	return command, args
 }
 
 // welcomeUser sends a welcome message to the user.

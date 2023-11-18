@@ -1,0 +1,23 @@
+[
+    {
+        "ID": "cybercluster",
+        "Name": "CyberCluster",
+        "PlanetIDs": ["anterra", "silosphere"]
+    },
+    {
+        "ID": "exodus-12",
+        "Name": "Exodus 12",
+        "PlanetIDs": ["the-nexus", "haven"]
+    },
+    {
+        "ID": "outer-limits",
+        "Name": "Outer Limits",
+        "PlanetIDs": ["silentium", "nocturna"]
+    },
+    {
+        "ID": "prometheous",
+        "Name": "Prometheous",
+        "PlanetIDs": ["echo-prime", "penchantara"]
+        
+    }
+]

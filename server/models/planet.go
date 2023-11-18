@@ -3,8 +3,10 @@ package models
 
 // Planet structure
 type Planet struct {
-	Name   string
-	Cities map[string]*City
+	ID       string
+	GalaxyID string
+	Name     string
+	Cities   map[string]*City
 }
 
 func CreatePlanet(name string, cities map[string]*City) *Planet {
