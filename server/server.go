@@ -8,9 +8,22 @@ import (
 	"github.com/kasirocswell/gomudserver/models"
 )
 
+var AllNPCs = make(map[string]*models.NPC)
+
 func main() {
 	// Create the universe
-	universe := models.CreateUniverse()
+	universe, err := models.CreateUniverse(AllNPCs)
+	if err != nil {
+		fmt.Println("Error creating universe:", err)
+		return
+	}
+
+	// Load NPCs into the universe
+	err = models.LoadNPCs("data/npc/", universe)
+	if err != nil {
+		fmt.Println("Error loading NPCs:", err)
+		return
+	}
 
 	// Start server
 	listener, err := net.Listen("tcp", "localhost:4000")
@@ -28,6 +41,8 @@ func main() {
 			fmt.Println("Error accepting connection:", err)
 			continue
 		}
+
+		// Pass the universe to the connection handler
 		go handlers.HandleNewConnection(conn, universe)
 	}
 }

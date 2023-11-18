@@ -1,10 +1,21 @@
 package models
 
-// Import necessary packages
+import (
+	"fmt"
+)
+
+const (
+	GalaxiesJSONPath = "data/galaxies.json" // Path to your galaxies JSON
+	PlanetsJSONPath  = "data/planets.json"  // Path to your planets JSON
+	CitiesJSONPath   = "data/cities.json"   // Path to your folder containing city JSON files
+	RoomsFolderPath  = "data/rooms/"
+	npcFilePath      = "data/npc"
+)
 
 // Universe structure
 type Universe struct {
 	Galaxies map[string]*Galaxy
+	NPCs     map[string]*NPC
 }
 
 // NewUniverse creates a new Universe instance.
@@ -14,108 +25,93 @@ func NewUniverse() *Universe {
 	}
 }
 
-// CreateUniverse initializes the universe with its galaxies, planets, and cities.
-func CreateUniverse() *Universe {
-	// Define common rooms
-	commonRooms := InitializeCommonRooms()
+func CreateUniverse(npcMap map[string]*NPC) (*Universe, error) {
+	universe := NewUniverse()
 
-	// Initialize unique rooms for each city
-	uniqueRoomsForNeoTokyo := InitializeUniqueRooms("NeoTokyo")
-	uniqueRoomsForCyberLisbon := InitializeUniqueRooms("CyberLisbon")
-	uniqueRoomsForSiliconParis := InitializeUniqueRooms("SiliconParis")
-	uniqueRoomsForDigitalDelhi := InitializeUniqueRooms("DigitalDelhi")
-	uniqueRoomsForDigitalisCity1 := InitializeUniqueRooms("DigitalisCity1")
-	uniqueRoomsForDigitalisCity2 := InitializeUniqueRooms("DigitalisCity2")
-	uniqueRoomsForNeptuneCity1 := InitializeUniqueRooms("NeptuneCity1")
-	uniqueRoomsForNeptuneCity2 := InitializeUniqueRooms("NeptuneCity2")
-
-	// Create cities with common and unique rooms for each planet
-	citiesForTechterra := map[string]*City{
-		"NeoTokyo":    createCity("NeoTokyo", commonRooms, uniqueRoomsForNeoTokyo),
-		"CyberLisbon": createCity("CyberLisbon", commonRooms, uniqueRoomsForCyberLisbon),
+	// Load Galaxies
+	galaxies, err := LoadGalaxies(GalaxiesJSONPath)
+	if err != nil {
+		return nil, fmt.Errorf("error loading galaxies: %w", err)
 	}
 
-	citiesForSiliconSphere := map[string]*City{
-		"SiliconParis": createCity("SiliconParis", commonRooms, uniqueRoomsForSiliconParis),
-		"DigitalDelhi": createCity("DigitalDelhi", commonRooms, uniqueRoomsForDigitalDelhi),
+	// Load Planets
+	planets, err := LoadPlanets(PlanetsJSONPath)
+	if err != nil {
+		return nil, fmt.Errorf("error loading planets: %w", err)
 	}
 
-	citiesForDigitalis := map[string]*City{
-		"DigitalisCity1": createCity("DigitalisCity1", commonRooms, uniqueRoomsForDigitalisCity1),
-		"DigitalisCity2": createCity("DigitalisCity2", commonRooms, uniqueRoomsForDigitalisCity2),
+	// Load Cities
+	cities, err := LoadCities(CitiesJSONPath)
+	if err != nil {
+		return nil, fmt.Errorf("error loading cities: %w", err)
 	}
 
-	citiesForNetNeptune := map[string]*City{
-		"NeptuneCity1": createCity("NeptuneCity1", commonRooms, uniqueRoomsForNeptuneCity1),
-		"NeptuneCity2": createCity("NeptuneCity2", commonRooms, uniqueRoomsForNeptuneCity2),
+	// Load and Assign Rooms
+	roomsByCity, err := LoadRoomsFromFolder(RoomsFolderPath)
+	if err != nil {
+		return nil, fmt.Errorf("error loading rooms: %w", err)
 	}
 
-	// Create planets with their own set of cities
-	planets := map[string]*Planet{
-		"Techterra":     CreatePlanet("Techterra", citiesForTechterra),
-		"SiliconSphere": CreatePlanet("SiliconSphere", citiesForSiliconSphere),
-		"Digitalis":     CreatePlanet("Digitalis", citiesForDigitalis),
-		"NetNeptune":    CreatePlanet("NetNeptune", citiesForNetNeptune),
-	}
+	// Process the loaded data
+	for _, galaxy := range galaxies {
+		galaxyMap := &Galaxy{
+			ID:      galaxy.ID,
+			Name:    galaxy.Name,
+			Planets: make(map[string]*Planet),
+		}
+		universe.Galaxies[galaxy.ID] = galaxyMap
 
-	// Create galaxies with planets
-	galaxies := map[string]*Galaxy{
-		"CyberCluster":  createGalaxy("CyberCluster", map[string]*Planet{"Techterra": planets["Techterra"]}),
-		"SiliconDomain": createGalaxy("SiliconDomain", map[string]*Planet{"SiliconSphere": planets["SiliconSphere"]}),
-		"DataDell":      createGalaxy("DataDell", map[string]*Planet{"Digitalis": planets["Digitalis"]}),
-		"NeptuneNest":   createGalaxy("NeptuneNest", map[string]*Planet{"NetNeptune": planets["NetNeptune"]}),
-	}
+		for _, planet := range planets {
+			if planet.GalaxyID == galaxy.ID {
+				planetMap := &Planet{
+					ID:       planet.ID,
+					GalaxyID: planet.GalaxyID,
+					Name:     planet.Name,
+					Cities:   make(map[string]*City),
+				}
+				galaxyMap.Planets[planet.ID] = planetMap
 
-	// Link unique rooms within cities if necessary
-	// For example, if you have a secret passage from the Secret Lab to the Armory in NeoTokyo
-	// citiesForTechterra["NeoTokyo"].Rooms["Secret Lab"].Enter = citiesForTechterra["NeoTokyo"].Rooms["Armory"]
-	// citiesForTechterra["NeoTokyo"].Rooms["Armory"].Exit = citiesForTechterra["NeoTokyo"].Rooms["Secret Lab"]
+				for _, city := range cities {
+					if city.PlanetID == planet.ID {
+						cityMap := &City{
+							ID:       city.ID,
+							PlanetID: city.PlanetID,
+							Name:     city.Name,
+							Rooms:    make(map[string]*Room),
+						}
+						planetMap.Cities[city.ID] = cityMap
 
-	// ... Link unique rooms for other cities similarly
-
-	// Create universe with galaxies
-	return &Universe{
-		Galaxies: galaxies,
-	}
-}
-
-// GetGalaxy retrieves a galaxy by its name from the universe.
-func (u *Universe) GetGalaxy(name string) *Galaxy {
-	if galaxy, ok := u.Galaxies[name]; ok {
-		return galaxy
-	}
-	return nil
-}
-
-// GetPlanet retrieves a planet by its name from a specified galaxy.
-func (u *Universe) GetPlanet(galaxyName, planetName string) *Planet {
-	galaxy := u.GetGalaxy(galaxyName)
-	if galaxy != nil {
-		if planet, ok := galaxy.Planets[planetName]; ok {
-			return planet
+						if rooms, exists := roomsByCity[city.ID]; exists {
+							for _, roomData := range rooms {
+								roomMap := &Room{
+									ID:              roomData.ID,
+									CityID:          roomData.CityID,
+									Name:            roomData.Name,
+									DescriptionText: roomData.DescriptionText,
+									Players:         make(map[*User]bool),
+									NorthID:         roomData.NorthID,
+									SouthID:         roomData.SouthID,
+									EastID:          roomData.EastID,
+									WestID:          roomData.WestID,
+									EnterID:         roomData.EnterID,
+									ExitID:          roomData.ExitID,
+								}
+								cityMap.Rooms[roomData.ID] = roomMap
+							}
+							// Link rooms within the city
+							linkRooms(cityMap.Rooms)
+						}
+					}
+				}
+			}
 		}
 	}
-	return nil
-}
 
-// GetCity retrieves a city by its name from a specified planet in a specified galaxy.
-func (u *Universe) GetCity(galaxyName, planetName, cityName string) *City {
-	planet := u.GetPlanet(galaxyName, planetName)
-	if planet != nil {
-		if city, ok := planet.Cities[cityName]; ok {
-			return city
-		}
+	// Load NPCs
+	err = LoadNPCs(npcFilePath, universe)
+	if err != nil {
+		return nil, fmt.Errorf("error loading NPCs: %w", err)
 	}
-	return nil
-}
 
-// GetRoom retrieves a room by its name from a specified city in a specified planet in a specified galaxy.
-func (u *Universe) GetRoom(galaxyName, planetName, cityName, roomName string) *Room {
-	city := u.GetCity(galaxyName, planetName, cityName)
-	if city != nil {
-		if room, ok := city.Rooms[roomName]; ok {
-			return room
-		}
-	}
-	return nil
+	return universe, nil
 }

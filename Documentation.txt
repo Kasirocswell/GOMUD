@@ -1,0 +1,57 @@
+Creating Planets
+Step 1: Understand the Planet Structure
+	•	A planet is a major part of a galaxy and can contain several cities.
+	•	Each planet should have a unique theme and characteristics.
+Step 2: Define the Planet
+	•	Choose a name and theme for the planet.
+	•	Plan out the cities that will be on this planet.
+Step 3: Implement Planet Creation in Code
+	•	Use the CreatePlanet function to create a new planet.
+	•	Example:go  Copy codetechterra := CreatePlanet("Techterra", citiesForTechterra)   
+Step 4: Add the Planet to a Galaxy
+	•	Add the newly created planet to the appropriate galaxy.
+	•	Example:go  Copy codegalaxies["CyberCluster"].Planets["Techterra"] = techterra   
+Step 5: Testing and Validation
+	•	Test to ensure the planet is properly integrated into its galaxy.
+	•	Check that the planet and its cities are navigable in the game.
+Step 6: Documentation
+	•	Document the planet's name, theme, and the cities it contains.
+
+
+Creating Cities
+Step 1: Understand the City Structure
+	•	A city is a subdivision of a planet and contains various rooms.
+	•	Cities can have both common and unique rooms.
+Step 2: Define the City
+	•	Decide on the city's name and characteristics.
+	•	Plan out the rooms that will be in the city.
+Step 3: Implement City Creation in Code
+	•	Use the createCity function to create a new city.
+	•	Example:go  Copy codeneoTokyo := createCity("NeoTokyo", commonRooms, uniqueRoomsForNeoTokyo)   
+Step 4: Add the City to a Planet
+	•	Add the city to its corresponding planet.
+	•	Example:go  Copy codeplanets["Techterra"].Cities["NeoTokyo"] = neoTokyo   
+Step 5: Testing and Validation
+	•	Test the city within the game to ensure it's accessible and navigable.
+Step 6: Documentation
+	•	Document the city's layout, rooms, and any notable features.
+
+	
+Creating Rooms (Common, Unique, and Interiors)
+Step 1: Understand the Room Structure
+	•	Rooms are the smallest units in the game where players can interact.
+	•	There are common rooms (found in many cities) and unique rooms (specific to a city).
+Step 2: Define the Rooms
+	•	Plan the name, description, and connections of each room.
+Step 3: Implement Room Creation in Code
+	•	Use NewRoom for common rooms and CreateUniqueRoom for unique rooms.
+	•	Example for a common room:go  Copy codebarracks := NewRoom("Barracks", "A room description.", nil, nil, nil, nil, nil, nil)   
+	•	Example for a unique room:go  Copy codesecretLab := CreateUniqueRoom("Secret Lab", "A hidden laboratory with advanced technology.")   
+Step 4: Add Rooms to a City and Link Them
+	•	Add rooms to the city and use LinkRooms to establish connections.
+	•	Example:go  Copy codeneoTokyo.Rooms["Barracks"] = barracks LinkRooms(barracks, secretLab, "north")   
+Step 5: Testing and Validation
+	•	Ensure that rooms are accessible and properly linked in the game.
+Step 6: Documentation
+	•	Document each room's features, location, and how it fits into the city's narrative.
+This guide provides a structured approach for content creators to add new elements to the game world, ensuring consistency and clarity in the development process. Remember, thorough testing and validation are crucial at each step to maintain a seamless and immersive game experience.

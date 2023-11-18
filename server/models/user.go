@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"net"
 	"strings"
+	"time"
 )
 
 // Enums and Data Structures
@@ -29,11 +30,11 @@ const (
 type Class string
 
 const (
-	Soldier      Class = "Soldier"
-	Medic        Class = "Medic"
-	Pilot        Class = "Pilot"
-	Engineer     Class = "Engineer"
-	Entrepreneur Class = "Entrepreneur"
+	Soldier  Class = "Soldier"
+	Medic    Class = "Medic"
+	Pilot    Class = "Pilot"
+	Engineer Class = "Engineer"
+	Merchant Class = "Merchant"
 )
 
 type Attributes struct {
@@ -48,20 +49,42 @@ type Attributes struct {
 	Wisdom       int
 }
 
+type Effects struct {
+	Healthy  string
+	Hungry   string
+	Poisoned string
+}
+
 type User struct {
-	Conn       net.Conn
-	Name       string
-	Race       Race
-	Class      Class
-	Attributes Attributes
-	Room       *Room
-	City       *City
-	Planet     *Planet
-	Galaxy     *Galaxy
-	Reader     *bufio.Reader
-	Writer     *bufio.Writer
-	State      GameState
-	Rolls      int
+	Conn           net.Conn
+	Name           string
+	Race           Race
+	Class          Class
+	Attributes     Attributes
+	Room           *Room
+	City           *City
+	Planet         *Planet
+	Galaxy         *Galaxy
+	Reader         *bufio.Reader
+	Writer         *bufio.Writer
+	State          GameState
+	Rolls          int
+	Health         int
+	MaxHealth      int
+	Level          int
+	ClassLevel     int
+	XP             int
+	Inventory      []Item
+	Equipment      Equipment
+	StatusEffects  []Effects
+	CurrentWeight  int            // Total weight of items currently in inventory
+	MaxCarryWeight int            // Maximum weight the user can carry
+	Skills         map[string]int // Skills with their proficiency levels
+	Energy         int            // For actions or abilities
+	MaxEnergy      int            // Maximum energy capacity
+	Credits        int            // Currency for transactions
+	Reputation     map[string]int // Reputation with different factions or groups
+	Quests         []Quest        // Active quests
 }
 
 func NewUser(conn net.Conn, r *bufio.Reader, w *bufio.Writer) *User {
@@ -105,8 +128,8 @@ func (u *User) SetClass(classChoice string) error {
 		u.Class = Pilot
 	case Engineer:
 		u.Class = Engineer
-	case Entrepreneur:
-		u.Class = Entrepreneur
+	case Merchant:
+		u.Class = Merchant
 	default:
 		return fmt.Errorf("invalid class selection: %s; please choose from Soldier, Medic, Pilot, Engineer, or Entrepreneur", classChoice)
 	}
@@ -158,50 +181,50 @@ func (u *User) DisplayAttributes() string {
 func (u *User) SpawnInUniverse(universe *Universe) {
 	switch u.Class {
 	case Soldier:
-		u.Galaxy = universe.GetGalaxy("CyberCluster")
-		u.Planet = universe.GetPlanet("CyberCluster", "Techterra")
-		u.City = universe.GetCity("CyberCluster", "Techterra", "NeoTokyo")
-		u.Room = universe.GetRoom("CyberCluster", "Techterra", "NeoTokyo", "Barracks")
+		u.setInitialLocation(universe, "cybercluster", "anterra", "neo-tokyo", "central-neotokyo")
 	case Medic:
-		u.Galaxy = universe.GetGalaxy("DigitalDomain")
-		u.Planet = universe.GetPlanet("DigitalDomain", "SiliconSphere")
-		u.City = universe.GetCity("DigitalDomain", "SiliconSphere", "SiliconParis")
-		u.Room = universe.GetRoom("DigitalDomain", "SiliconSphere", "SiliconParis", "Hospital")
+		u.setInitialLocation(universe, "exodus-12", "the-nexus", "solara-crest", "downtown-solara-crest")
 	case Pilot:
-		u.Galaxy = universe.GetGalaxy("NetNebula")
-		u.Planet = universe.GetPlanet("NetNebula", "NetNeptune")
-		u.City = universe.GetCity("NetNebula", "NetNeptune", "NeptuneCity1")
-		u.Room = universe.GetRoom("NetNebula", "NetNeptune", "NeptuneCity1", "Seedy Bar")
+		u.setInitialLocation(universe, "cybercluster", "silosphere", "del-hi", "uptown-del-hi")
 	case Engineer:
-		u.Galaxy = universe.GetGalaxy("TechTwilight")
-		u.Planet = universe.GetPlanet("TechTwilight", "Digitalis")
-		u.City = universe.GetCity("TechTwilight", "Digitalis", "DigitalisCity1")
-		u.Room = universe.GetRoom("TechTwilight", "Digitalis", "DigitalisCity1", "Local Shop")
-	case Entrepreneur:
-		u.Galaxy = universe.GetGalaxy("CyberCluster")
-		u.Planet = universe.GetPlanet("CyberCluster", "Techterra")
-		u.City = universe.GetCity("CyberCluster", "Techterra", "CyberLisbon")
-		u.Room = universe.GetRoom("CyberCluster", "Techterra", "CyberLisbon", "Town Square")
+		u.setInitialLocation(universe, "prometheous", "echo-prime", "luminon", "central-west-luminon")
+	case Merchant:
+		u.setInitialLocation(universe, "exodus-12", "haven", "zephyr", "central-zephyr")
 	default:
-		// Default spawn location if none of the above classes match.
-		u.Galaxy = universe.GetGalaxy("CyberCluster")
-		u.Planet = universe.GetPlanet("CyberCluster", "Techterra")
-		u.City = universe.GetCity("CyberCluster", "Techterra", "NeoTokyo")
-		u.Room = universe.GetRoom("CyberCluster", "Techterra", "NeoTokyo", "Town Square")
+		// Default spawn location
+		u.setInitialLocation(universe, "exodus-12", "the-nexus", "nebulon", "downtown-nebulon")
 	}
+}
 
-	// Check if any of the locations are nil
-	if u.Galaxy == nil {
-		fmt.Println("DEBUG: Galaxy is nil!")
-	}
-	if u.Planet == nil {
-		fmt.Println("DEBUG: Planet is nil!")
-	}
-	if u.City == nil {
-		fmt.Println("DEBUG: City is nil!")
-	}
-	if u.Room == nil {
-		fmt.Println("DEBUG: Room is nil!")
+func (u *User) setInitialLocation(universe *Universe, galaxyID, planetID, cityID, roomID string) {
+	fmt.Printf("Setting location: GalaxyID: %s, PlanetID: %s, CityID: %s, RoomID: %s\n", galaxyID, planetID, cityID, roomID)
+
+	if galaxy := universe.GetGalaxy(galaxyID); galaxy != nil {
+		u.Galaxy = galaxy
+		fmt.Printf("Found Galaxy: %s\n", galaxy.Name)
+
+		if planet, exists := galaxy.Planets[planetID]; exists {
+			u.Planet = planet
+			fmt.Printf("Found Planet: %s\n", planet.Name)
+
+			if city, exists := planet.Cities[cityID]; exists {
+				u.City = city
+				fmt.Printf("Found City: %s\n", city.Name)
+
+				if room, exists := city.Rooms[roomID]; exists {
+					u.Room = room
+					fmt.Printf("Found Room: %s\n", room.Name)
+				} else {
+					fmt.Println("Room not found.")
+				}
+			} else {
+				fmt.Println("City not found.")
+			}
+		} else {
+			fmt.Println("Planet not found.")
+		}
+	} else {
+		fmt.Println("Galaxy not found.")
 	}
 }
 
@@ -212,4 +235,46 @@ func (u *User) ReadInput() (string, error) {
 		return "", err
 	}
 	return strings.TrimSpace(input), nil
+}
+
+//respawn logic
+
+func RunRespawnLoop() {
+	ticker := time.NewTicker(1 * time.Second)
+	for range ticker.C {
+		RespawnDeadEnemies()
+	}
+}
+
+func RespawnDeadEnemies() {
+	currentTime := time.Now()
+
+	// Use a slice to keep track of enemies that need to be removed from DeadEnemies
+	var toBeRemoved []int
+
+	for i, enemy := range DeadEnemies {
+		if enemy.IsDead && currentTime.Sub(enemy.DeathTime) >= time.Duration(enemy.RespawnTime)*time.Second {
+			RespawnEnemy(enemy)
+			toBeRemoved = append(toBeRemoved, i)
+		}
+	}
+
+	// Remove respawned enemies from DeadEnemies list
+	for _, index := range toBeRemoved {
+		DeadEnemies = append(DeadEnemies[:index], DeadEnemies[index+1:]...)
+	}
+}
+
+func RespawnEnemy(enemy *Enemy) {
+	// Reset enemy properties for respawn (health, position, etc.)
+	enemy.IsDead = false
+	enemy.Health = enemy.MaxHealth
+	// Reset other necessary properties and place the enemy back in the game
+}
+
+// AddEnemyToDeadList adds a defeated enemy to the DeadEnemies list
+func AddEnemyToDeadList(enemy *Enemy) {
+	enemy.IsDead = true
+	enemy.DeathTime = time.Now()
+	DeadEnemies = append(DeadEnemies, enemy)
 }

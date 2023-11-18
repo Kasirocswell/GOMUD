@@ -1,0 +1,57 @@
+[
+    {
+        "ID": "blaster_pistol",
+        "Name": "Blaster Pistol",
+        "Description": "A lightweight pistol with moderate firepower.",
+        "Type": "weapon",
+        "Stats": {"damage": 15},
+        "Quantity": 1,
+        "Weight": 2,
+        "Slot": "Right_Hand",
+        "Atk": 15
+    },
+    {
+        "ID": "laser_rifle",
+        "Name": "Laser Rifle",
+        "Description": "A long-range rifle with high accuracy.",
+        "Type": "weapon",
+        "Stats": {"damage": 25},
+        "Quantity": 1,
+        "Weight": 5,
+        "Slot": "Two_Hand",
+        "Atk": 25
+    },
+    {
+        "ID": "plasma_cannon",
+        "Name": "Plasma Cannon",
+        "Description": "A heavy weapon that fires destructive plasma charges.",
+        "Type": "weapon",
+        "Stats": {"damage": 35},
+        "Quantity": 1,
+        "Weight": 7,
+        "Slot": "Two_Hand",
+        "Atk": 35
+    },
+    {
+        "ID": "energy_sword",
+        "Name": "Energy Sword",
+        "Description": "A sword emitting a blade of pure energy.",
+        "Type": "weapon",
+        "Stats": {"damage": 20},
+        "Quantity": 1,
+        "Weight": 3,
+        "Slot": "Right_Hand",
+        "Atk": 20
+    },
+    {
+        "ID": "shock_dagger",
+        "Name": "Shock Dagger",
+        "Description": "A small dagger that delivers a shocking blow.",
+        "Type": "weapon",
+        "Stats": {"damage": 10, "shock": 5},
+        "Quantity": 1,
+        "Weight": 1,
+        "Slot": "Left_Hand",
+        "Atk": 10
+    }
+]

@@ -1,0 +1,57 @@
+[
+    {
+        "ID": "helmet_basic",
+        "Name": "Basic Helmet",
+        "Description": "A standard helmet offering basic head protection.",
+        "Type": "armor",
+        "Stats": {"defense": 5},
+        "Quantity": 1,
+        "Weight": 2,
+        "Slot": "Head",
+        "Def": 5
+    },
+    {
+        "ID": "chestplate_basic",
+        "Name": "Basic Chestplate",
+        "Description": "A simple chestplate providing minimal chest protection.",
+        "Type": "armor",
+        "Stats": {"defense": 10},
+        "Quantity": 1,
+        "Weight": 4,
+        "Slot": "Chest",
+        "Def": 10
+    },
+    {
+        "ID": "gauntlets_basic",
+        "Name": "Basic Gauntlets",
+        "Description": "Standard gauntlets to protect the hands.",
+        "Type": "armor",
+        "Stats": {"defense": 3},
+        "Quantity": 1,
+        "Weight": 1,
+        "Slot": "Arms",
+        "Def": 3
+    },
+    {
+        "ID": "leggings_basic",
+        "Name": "Basic Leggings",
+        "Description": "Basic protective gear for the legs.",
+        "Type": "armor",
+        "Stats": {"defense": 7},
+        "Quantity": 1,
+        "Weight": 3,
+        "Slot": "Legs",
+        "Def": 7
+    },
+    {
+        "ID": "boots_basic",
+        "Name": "Basic Boots",
+        "Description": "Sturdy boots offering basic foot protection.",
+        "Type": "armor",
+        "Stats": {"defense": 4},
+        "Quantity": 1,
+        "Weight": 2,
+        "Slot": "Feet",
+        "Def": 4
+    }
+]

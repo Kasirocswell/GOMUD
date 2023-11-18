@@ -1,0 +1,42 @@
+[
+    {
+        "ID": "anterra",
+        "GalaxyID": "cybercluster",
+        "Name": "Anterra"
+    },
+    {
+        "ID": "silosphere",
+        "GalaxyID": "cybercluster",
+        "Name": "SiloSphere"
+    },
+    {
+        "ID": "the-nexus",
+        "GalaxyID": "exodus-12",
+        "Name": "The Nexus"
+    },
+    {
+        "ID": "haven",
+        "GalaxyID": "exodus-12",
+        "Name": "Haven"
+    },
+    {
+        "ID": "chronoscape",
+        "GalaxyID": "outer-limits",
+        "Name": "Chronoscape"
+    },
+    {
+        "ID": "mistara",
+        "GalaxyID": "outer-limits",
+        "Name": "Mistara"
+    },
+    {
+        "ID": "echo-prime",
+        "GalaxyID": "prometheous",
+        "Name": "Echo Prime"
+    },
+    {
+        "ID": "penchantara",
+        "GalaxyID": "prometheous",
+        "Name": "Penchantara"
+    }
+]

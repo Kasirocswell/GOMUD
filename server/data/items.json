@@ -1,0 +1,57 @@
+[
+    {
+        "ID": "stimpak",
+        "Name": "Stimpak",
+        "Description": "A standard medical injection for quick health recovery.",
+        "Type": "consumable",
+        "Stats": {"heal": 25},
+        "Quantity": 1,
+        "Weight": 1,
+        "Slot": "Use",
+        "Buff": 25
+    },
+    {
+        "ID": "medkit",
+        "Name": "Medkit",
+        "Description": "A comprehensive medical kit for significant health restoration.",
+        "Type": "consumable",
+        "Stats": {"heal": 50},
+        "Quantity": 1,
+        "Weight": 3,
+        "Slot": "Use",
+        "Buff": 50
+    },
+    {
+        "ID": "energy_drink",
+        "Name": "Energy Drink",
+        "Description": "Boosts energy and alertness for a short duration.",
+        "Type": "consumable",
+        "Stats": {"energy": 15},
+        "Quantity": 1,
+        "Weight": 1,
+        "Slot": "Use",
+        "Buff": 15
+    },
+    {
+        "ID": "antidote",
+        "Name": "Antidote",
+        "Description": "Cures and provides temporary immunity to poisons.",
+        "Type": "consumable",
+        "Stats": {"poison_resist": 100},
+        "Quantity": 1,
+        "Weight": 1,
+        "Slot": "Use",
+        "Buff": 0
+    },
+    {
+        "ID": "focus_capsule",
+        "Name": "Focus Capsule",
+        "Description": "Improves concentration and reflexes temporarily.",
+        "Type": "consumable",
+        "Stats": {"focus_boost": 20},
+        "Quantity": 1,
+        "Weight": 0.5,
+        "Slot": "Use",
+        "Buff": 20
+    }
+]
