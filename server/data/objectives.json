@@ -1,0 +1,12 @@
+{
+    "Objectives": [
+        {
+            "Description": "Objective 1",
+            "Type": "gather",
+            "Target": "item1",
+            "Current": 0,
+            "Required": 5,
+            "Completed": false
+        }
+    ]
+}

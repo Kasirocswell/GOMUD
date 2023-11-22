@@ -3,8 +3,12 @@
 package models
 
 import (
+	"encoding/json"
 	"fmt"
+	"os"
+	"path/filepath"
 	"reflect"
+	"strings"
 )
 
 // Item represents objects that players can find, use, or trade.
@@ -35,15 +39,16 @@ func (u *User) AddItemToInventory(item Item) error {
 }
 
 // Remove items form inventory
-func (u *User) RemoveItemFromInventory(itemID string) error {
+func (u *User) RemoveItemFromInventory(itemName string) (Item, error) {
 	for i, item := range u.Inventory {
-		if item.ID == itemID {
+		if strings.EqualFold(item.Name, itemName) { // Case-insensitive comparison
 			u.CurrentWeight -= item.Weight * item.Quantity
+			removedItem := u.Inventory[i]
 			u.Inventory = append(u.Inventory[:i], u.Inventory[i+1:]...)
-			return nil
+			return removedItem, nil
 		}
 	}
-	return fmt.Errorf("item not found in inventory")
+	return Item{}, fmt.Errorf("item '%s' not found in inventory", itemName)
 }
 
 // List the user inventory
@@ -96,4 +101,100 @@ func NewItem(id, name, description, itemType, slot string, stats map[string]int,
 		Quantity:    quantity,
 		Weight:      weight,
 	}
+}
+
+var AllWeapons = make(map[string]Item)
+
+func LoadWeapons(folderPath string) error {
+	files, err := os.ReadDir(folderPath)
+	if err != nil {
+		return err
+	}
+
+	for _, file := range files {
+		if file.IsDir() {
+			continue // Skip directories
+		}
+
+		filePath := filepath.Join(folderPath, file.Name())
+		fileData, err := os.ReadFile(filePath)
+		if err != nil {
+			return err
+		}
+
+		var weapons []Item
+		if err := json.Unmarshal(fileData, &weapons); err != nil {
+			return err
+		}
+
+		for _, weapon := range weapons {
+			AllWeapons[weapon.ID] = weapon
+		}
+	}
+
+	return nil
+}
+
+var AllArmor = make(map[string]Item)
+
+func LoadArmor(folderPath string) error {
+	files, err := os.ReadDir(folderPath)
+	if err != nil {
+		return err
+	}
+
+	for _, file := range files {
+		if file.IsDir() {
+			continue // Skip directories
+		}
+
+		filePath := filepath.Join(folderPath, file.Name())
+		fileData, err := os.ReadFile(filePath)
+		if err != nil {
+			return err
+		}
+
+		var armorItems []Item
+		if err := json.Unmarshal(fileData, &armorItems); err != nil {
+			return err
+		}
+
+		for _, armor := range armorItems {
+			AllArmor[armor.ID] = armor
+		}
+	}
+
+	return nil
+}
+
+var AllItems = make(map[string]Item)
+
+func LoadItems(folderPath string) error {
+	files, err := os.ReadDir(folderPath)
+	if err != nil {
+		return err
+	}
+
+	for _, file := range files {
+		if file.IsDir() {
+			continue // Skip directories
+		}
+
+		filePath := filepath.Join(folderPath, file.Name())
+		fileData, err := os.ReadFile(filePath)
+		if err != nil {
+			return err
+		}
+
+		var items []Item
+		if err := json.Unmarshal(fileData, &items); err != nil {
+			return err
+		}
+
+		for _, item := range items {
+			AllItems[item.ID] = item
+		}
+	}
+
+	return nil
 }

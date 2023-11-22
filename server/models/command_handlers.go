@@ -1,13 +1,11 @@
-package handlers
+package models
 
 import (
 	"fmt"
 	"strings"
-
-	"github.com/kasirocswell/gomudserver/models"
 )
 
-func HandleCommand(user *models.User, command string, universe *models.Universe, args ...string) {
+func HandleCommand(user *User, command string, universe *Universe, dialogueNodes map[string]DialogueNode, args ...string) {
 	if user == nil {
 		fmt.Println("DEBUG: User is nil.")
 		return
@@ -55,15 +53,43 @@ func HandleCommand(user *models.User, command string, universe *models.Universe,
 		}
 
 	case "talk":
-		if len(args) == 0 {
-			user.Writer.WriteString("Talk to whom?\n")
+		if len(user.Room.NPCs) == 0 {
+			user.Writer.WriteString("There's no one to talk to here.\n")
 		} else {
-			npcName := args[0]
-			models.InteractWithNPC(user, npcName)
+			// Start dialogue with the first NPC in the room
+			npcID := user.Room.NPCs[0]
+			npc, exists := AllNPCs[npcID]
+			if exists && npc.DialogueStartNode != "" {
+				InteractWithNPC(user, npc, dialogueNodes)
+				// The dialogue interaction is handled within InteractWithNPC.
+				// Once this function returns, the player is back in the game state.
+			} else {
+				user.Writer.WriteString("There's no one to talk to here.\n")
+			}
 		}
+	case "drop":
+		if len(args) == 0 {
+			user.Writer.WriteString("Drop what?\n")
+		} else {
+			itemName := strings.Join(args, " ") // Assuming item names can have spaces
+			item, err := user.RemoveItemFromInventory(itemName)
+			if err != nil {
+				user.Writer.WriteString(err.Error() + "\n")
+			} else {
+				user.Room.Items = append(user.Room.Items, item)
+				user.Writer.WriteString(fmt.Sprintf("You dropped %s.\n", itemName))
+			}
+		}
+		user.Writer.Flush()
+
+		user.Writer.Flush()
+	case "quests":
+		user.ListQuests()
 	case "look":
 		if user.Room != nil {
-			user.Writer.WriteString(user.Room.Description(*universe))
+			// Correct argument (the global NPC map)
+			user.Writer.WriteString(user.Room.Description(universe, AllNPCs))
+
 		} else {
 			user.Writer.WriteString("You are in an unknown location.\n")
 		}
@@ -73,29 +99,38 @@ func HandleCommand(user *models.User, command string, universe *models.Universe,
 	case "inventory", "inv":
 		// Handle inventory command
 		inventoryList := user.ListInventory()
-		if len(inventoryList) == 0 {
-			user.Writer.WriteString("Your inventory is empty.\n")
+		if len(inventoryList) == 0 && user.Equipment.IsEmpty() {
+			user.Writer.WriteString("Your inventory and equipment are empty.\n")
 		} else {
-			user.Writer.WriteString("Your inventory contains:\n")
-			for _, item := range inventoryList {
-				user.Writer.WriteString(item + "\n")
+			if len(inventoryList) > 0 {
+				user.Writer.WriteString("Your inventory contains:\n")
+				for _, item := range inventoryList {
+					user.Writer.WriteString(item + "\n")
+				}
+				user.Writer.WriteString(fmt.Sprintf("Total Weight: %d/%d\n", user.CurrentWeight, user.MaxCarryWeight))
+			} else {
+				user.Writer.WriteString("Your inventory is empty.\n")
 			}
-			user.Writer.WriteString(fmt.Sprintf("Total Weight: %d/%d\n", user.CurrentWeight, user.MaxCarryWeight))
+
+			user.Writer.WriteString("You are equipped with:\n")
+			user.Equipment.ListEquipment(user.Writer)
 		}
+		user.Writer.Flush()
+
 	default:
 		user.Writer.WriteString("Unknown command.\n")
 	}
 	user.Writer.Flush()
 }
 
-func move(user *models.User, direction string, universe *models.Universe) {
+func move(user *User, direction string, universe *Universe) {
 	if user.Room == nil {
 		user.Writer.WriteString("You are in an unknown location and cannot move.\n")
 		user.Writer.Flush()
 		return
 	}
 
-	var nextRoom *models.Room
+	var nextRoom *Room // Declare as a pointer
 	switch direction {
 	case "n", "north":
 		nextRoom = user.Room.N
@@ -114,7 +149,7 @@ func move(user *models.User, direction string, universe *models.Universe) {
 	if nextRoom == nil {
 		user.Writer.WriteString("There's no exit in that direction.\n")
 	} else {
-		user.Room = nextRoom
+		user.Room = nextRoom // This is now a pointer-to-pointer assignment
 		user.Writer.WriteString("You move " + direction + " to " + nextRoom.Name + ".\n")
 
 		// Update the room description with the new location
@@ -125,7 +160,8 @@ func move(user *models.User, direction string, universe *models.Universe) {
 	user.Writer.Flush()
 }
 
-func getLocationDescription(user *models.User, universe *models.Universe) string {
+// getLocationDescription constructs a string that describes the user's current location.
+func getLocationDescription(user *User, universe *Universe) string {
 	galaxyName := "Unknown Galaxy"
 	planetName := "Unknown Planet"
 	cityName := "Unknown City"
@@ -140,8 +176,25 @@ func getLocationDescription(user *models.User, universe *models.Universe) string
 		cityName = user.City.Name
 	}
 
-	// Use galaxyName, planetName, and cityName in the description
+	// Construct the base description using galaxy, planet, and city names
 	description := fmt.Sprintf("Galaxy: %s\nPlanet: %s\nCity: %s\n", galaxyName, planetName, cityName)
-	description += user.Room.Description(*universe) // Append room description
+
+	// Append the room description, if the user is currently in a room
+	if user.Room != nil {
+		description += user.Room.Description(universe, AllNPCs)
+	} else {
+		description += "You are currently not in any specific room."
+	}
+
 	return description
+}
+
+func FindNPCByName(name string, room *Room) *NPC {
+	for _, npcID := range room.NPCs {
+		npc, exists := AllNPCs[npcID]
+		if exists && strings.EqualFold(npc.Name, name) {
+			return npc
+		}
+	}
+	return nil
 }

@@ -1,0 +1,30 @@
+[
+    {
+        "ID": "crowbar",
+        "Name": "Basic Sword",
+        "Description": "A simple but effective steel sword.",
+        "Type": "Weapon",
+        "Stats": {"strength": 2},
+        "Quantity": 1,
+        "Weight": 5,
+        "Slot": "Right_Hand",
+        "Atk": 10,
+        "Def": 0,
+        "Effect": null,
+        "Buff": 0
+    },
+    {
+        "ID": "sledge",
+        "Name": "Stealth Dagger",
+        "Description": "A small, easily concealed dagger, perfect for quick attacks.",
+        "Type": "Weapon",
+        "Stats": {"agility": 3},
+        "Quantity": 1,
+        "Weight": 2,
+        "Slot": "Right_Hand",
+        "Atk": 7,
+        "Def": 0,
+        "Effect": null,
+        "Buff": 0
+    }
+]

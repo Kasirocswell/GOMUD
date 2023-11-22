@@ -1,0 +1,33 @@
+{
+  "nodes": [
+    {
+      "id": "node4",
+      "text": "Hello, traveler! What brings you here?",
+      "responses": [
+        {
+          "text": "Just passing through.",
+          "nextNode": "node8"
+        },
+        {
+          "text": "I'm looking for someone.",
+          "nextNode": "node9"
+        }
+      ]
+    },
+    {
+      "id": "node7",
+      "text": "Ok we're getting somewhere",
+      "responses": [
+        {
+          "text": "Just passing through.",
+          "nextNode": "node8"
+        },
+        {
+          "text": "I'm looking for someone.",
+          "nextNode": "node9"
+        }
+      ]
+    }
+  ]
+}
+  
