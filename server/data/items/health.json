@@ -1,0 +1,16 @@
+[
+    {
+        "ID": "health_potion",
+        "Name": "Health Potion",
+        "Description": "A potion that restores a small amount of health.",
+        "Type": "Consumable",
+        "Stats": {},
+        "Quantity": 1,
+        "Weight": 1,
+        "Slot": "",
+        "Atk": 0,
+        "Def": 0,
+        "Effect": {"type": "heal", "value": 20},
+        "Buff": 0
+    }
+]

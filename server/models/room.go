@@ -12,6 +12,7 @@ type Room struct {
 	Name            string
 	DescriptionText string
 	Players         map[*User]bool
+	Items           []Item
 
 	// IDs for adjacent rooms
 	NorthID string
@@ -32,14 +33,14 @@ type Room struct {
 	NPCs []string
 }
 
-func (r *Room) Description(universe Universe) string {
+func (r *Room) Description(universe *Universe, npcMap map[string]*NPC) string {
 	description := fmt.Sprintf("Location: %s\n\n%s", r.Name, r.DescriptionText)
 
 	// Add NPCs present in the room to the description
 	if len(r.NPCs) > 0 {
 		npcNames := make([]string, 0, len(r.NPCs))
 		for _, npcID := range r.NPCs {
-			if npc, exists := universe.NPCs[npcID]; exists {
+			if npc, exists := npcMap[npcID]; exists {
 				npcNames = append(npcNames, npc.Name)
 			}
 		}
@@ -48,7 +49,7 @@ func (r *Room) Description(universe Universe) string {
 		description += "\nThere are no NPCs here."
 	}
 
-	// Add information about available exits.
+	// Add information about available exits
 	exits := []string{}
 	if r.N != nil {
 		exits = append(exits, "north")

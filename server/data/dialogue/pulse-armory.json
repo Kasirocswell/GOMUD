@@ -1,0 +1,32 @@
+{
+    "nodes": [
+      {
+        "id": "pulse-armory-node1",
+        "text": "Hello, traveler! What brings you here?",
+        "responses": [
+          {
+            "text": "Just passing through.",
+            "nextNode": "pulse-armory-node2"
+          },
+          {
+            "text": "I'm looking for someone.",
+            "nextNode": "pulse-armory-node3"
+          }
+        ]
+      },
+      {
+        "id": "pulse-armory-node2",
+        "text": "Ok we're getting somewhere",
+        "responses": [
+          {
+            "text": "Just passing through.",
+            "nextNode": "pulse-armory-node2"
+          },
+          {
+            "text": "I'm looking for someone.",
+            "nextNode": "pulse-armory-node3"
+          }
+        ]
+      }
+    ]
+  }

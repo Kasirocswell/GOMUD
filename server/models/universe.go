@@ -25,7 +25,7 @@ func NewUniverse() *Universe {
 	}
 }
 
-func CreateUniverse(npcMap map[string]*NPC) (*Universe, error) {
+func CreateUniverse() (*Universe, error) {
 	universe := NewUniverse()
 
 	// Load Galaxies

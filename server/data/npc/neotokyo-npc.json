@@ -12,7 +12,7 @@
     "Inventory": [],
     "Equipment": {},
     "AIType": "friendly",
-    "Dialogue": ["Welcome to Pulse Armory, the best place in Neo-Tokyo for cutting-edge weapons.", "Looking for something special? I'm sure I can help you.", "Each weapon here has its own story. Care to hear one?"],
+    "DialogueStartNode": "pulse-armory-node1",
     "Quests": ["quest_for_knowledge"],
     "LocationID": "pulse-armory-neotokyo"
 }

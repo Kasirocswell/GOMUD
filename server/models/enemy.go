@@ -40,3 +40,17 @@ func NewEnemy(name, description, race, class string, health, maxHealth int, aggr
 		// Set other enemy-specific fields
 	}
 }
+
+func (eq *Equipment) IsEmpty() bool {
+	return eq.Right_Hand == nil &&
+		eq.Left_Hand == nil &&
+		eq.Head == nil &&
+		eq.Neck == nil &&
+		eq.Chest == nil &&
+		eq.Back == nil &&
+		eq.Arms == nil &&
+		eq.Waist == nil &&
+		eq.Legs == nil &&
+		eq.Feet == nil &&
+		eq.Accessory == nil
+}

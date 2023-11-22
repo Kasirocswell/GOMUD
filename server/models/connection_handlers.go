@@ -1,24 +1,22 @@
 // handlers/connection_handlers.go
 
-package handlers
+package models
 
 import (
 	"bufio"
 	"fmt"
 	"net"
 	"strings"
-
-	"github.com/kasirocswell/gomudserver/models"
 )
 
-func HandleNewConnection(conn net.Conn, universe *models.Universe) {
+func HandleNewConnection(conn net.Conn, universe *Universe, dialogueNodes map[string]DialogueNode) {
 	defer conn.Close()
 
-	user := &models.User{
+	user := &User{
 		Conn:   conn,
 		Reader: bufio.NewReader(conn),
 		Writer: bufio.NewWriter(conn),
-		State:  models.CharacterCreation,
+		State:  CharacterCreation,
 	}
 
 	user.Writer.WriteString("Welcome to Hacker-Realm!\n")
@@ -32,7 +30,7 @@ func HandleNewConnection(conn net.Conn, universe *models.Universe) {
 			return
 		}
 		switch user.State {
-		case models.CharacterCreation:
+		case CharacterCreation:
 			if user.Name == "" {
 				user.Name = input
 				user.Writer.WriteString("Select your race (Human, Draconian, Cyborg, Uthalu, Drogan): ")
@@ -44,7 +42,7 @@ func HandleNewConnection(conn net.Conn, universe *models.Universe) {
 					user.Writer.Flush()
 					continue
 				}
-				user.Writer.WriteString("Select your class (Soldier, Medic, Pilot, Engineer, Entrepreneur): ")
+				user.Writer.WriteString("Select your class (Soldier, Medic, Pilot, Engineer, Merchant): ")
 				user.Writer.Flush()
 			} else if user.Class == "" {
 				err := user.SetClass(input)
@@ -59,7 +57,7 @@ func HandleNewConnection(conn net.Conn, universe *models.Universe) {
 				user.Writer.Flush()
 			} else if user.Rolls < 3 {
 				if input == "keep" {
-					user.State = models.InGame
+					user.State = InGame
 					// Debug print statement to check the user's game state and other attributes
 					fmt.Printf("DEBUG: User State: %v, Name: %s, Race: %s, Class: %s, Attributes: %+v\n", user.State, user.Name, user.Race, user.Class, user.Attributes)
 					user.SpawnInUniverse(universe)
@@ -99,18 +97,18 @@ func HandleNewConnection(conn net.Conn, universe *models.Universe) {
 					user.Writer.Flush()
 				}
 			} else {
-				user.State = models.InGame
+				user.State = InGame
 				// Extract command and arguments
 				command, args := parseCommand(input)
-				HandleCommand(user, command, universe, args...)
+				HandleCommand(user, command, universe, dialogueNodes, args...)
 				user.SpawnInUniverse(universe)
 				user.Writer.WriteString(fmt.Sprintf("You have been spawned in %s, %s on planet %s in the %s galaxy.\n", user.Room.Name, user.City.Name, user.Planet.Name, user.Galaxy.Name))
 				user.Writer.Flush()
 			}
-		case models.InGame:
+		case InGame:
 			// Handle in-game commands using the abstracted function
 			command, args := parseCommand(input)
-			HandleCommand(user, command, universe, args...)
+			HandleCommand(user, command, universe, dialogueNodes, args...)
 
 		}
 	}

@@ -1,0 +1,23 @@
+[
+    {
+        "ID": "quest1",
+        "Name": "Find the Lost Sword",
+        "Description": "Retrieve the lost sword of the ancient knight from the haunted cave.",
+        "Objectives": [
+            {
+                "Description": "Go to the haunted cave",
+                "Type": "location",
+                "Target": "haunted cave",
+                "Current": 0,
+                "Required": 1,
+                "Completed": false
+            }
+        ],
+        "Reward": {
+            "XP": 100,
+            "Items": [{"Name": "Healing Potion", "Quantity": 2}],
+            "Credits": 50
+        },
+        "Status": "not started"
+    }
+]

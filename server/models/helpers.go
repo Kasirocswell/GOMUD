@@ -145,7 +145,7 @@ func Contains(slice []string, str string) bool {
 	return false
 }
 
-// var AllNPCs = make(map[string]*NPC)
+var AllNPCs = make(map[string]*NPC)
 
 func LoadNPCs(folderPath string, universe *Universe) error {
 	files, err := os.ReadDir(folderPath)
@@ -166,8 +166,14 @@ func LoadNPCs(folderPath string, universe *Universe) error {
 		}
 
 		for _, npc := range npcs {
+			npcCopy := npc             // Create a copy of the NPC to avoid pointer issues
+			AllNPCs[npc.ID] = &npcCopy // Add the NPC copy to the global map
+
 			if room := findRoomByNPCLocation(npc.LocationID, universe); room != nil {
-				room.NPCs = append(room.NPCs, npc.ID)
+				// Check if NPC is already in the room
+				if !Contains(room.NPCs, npc.ID) {
+					room.NPCs = append(room.NPCs, npc.ID) // Assign the NPC ID to the room
+				}
 			}
 		}
 	}
@@ -186,4 +192,40 @@ func findRoomByNPCLocation(roomID string, universe *Universe) *Room {
 		}
 	}
 	return nil
+}
+
+type DialogueNodesContainer struct {
+	Nodes []DialogueNode `json:"nodes"`
+}
+
+func LoadDialogueNodes(folderPath string) (map[string]DialogueNode, error) {
+	dialogueNodes := make(map[string]DialogueNode)
+
+	files, err := os.ReadDir(folderPath)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, file := range files {
+		if file.IsDir() {
+			continue // Skip directories
+		}
+
+		filePath := filepath.Join(folderPath, file.Name())
+		fileData, err := os.ReadFile(filePath)
+		if err != nil {
+			return nil, err
+		}
+
+		var container DialogueNodesContainer
+		if err := json.Unmarshal(fileData, &container); err != nil {
+			return nil, err
+		}
+
+		for _, node := range container.Nodes {
+			dialogueNodes[node.ID] = node
+		}
+	}
+
+	return dialogueNodes, nil
 }

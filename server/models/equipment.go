@@ -3,6 +3,7 @@
 package models
 
 import (
+	"bufio"
 	"fmt"
 	"reflect"
 )
@@ -87,8 +88,6 @@ func (u *User) EquipItem(itemName string) error {
 
 // equipment.go
 
-// equipment.go
-
 func (u *User) UnequipItem(itemName string) error {
 	var itemPtr **Item
 	var found bool
@@ -121,6 +120,37 @@ func (u *User) UnequipItem(itemName string) error {
 	*itemPtr = nil
 
 	return nil
+}
+
+func (eq *Equipment) ListEquipment(writer *bufio.Writer) {
+	equippedItems := []string{
+		formatEquipmentItem("Right Hand", eq.Right_Hand),
+		formatEquipmentItem("Left Hand", eq.Left_Hand),
+		formatEquipmentItem("Head", eq.Head),
+		formatEquipmentItem("Neck", eq.Neck),
+		formatEquipmentItem("Chest", eq.Chest),
+		formatEquipmentItem("Back", eq.Back),
+		formatEquipmentItem("Arms", eq.Arms),
+		formatEquipmentItem("Waist", eq.Waist),
+		formatEquipmentItem("Legs", eq.Legs),
+		formatEquipmentItem("Feet", eq.Feet),
+		formatEquipmentItem("Accessory", eq.Accessory),
+	}
+
+	for _, itemDesc := range equippedItems {
+		if itemDesc != "" {
+			writer.WriteString(itemDesc + "\n")
+		}
+	}
+
+	writer.Flush()
+}
+
+func formatEquipmentItem(slotName string, item *Item) string {
+	if item != nil {
+		return fmt.Sprintf("%s: %s", slotName, item.Name)
+	}
+	return ""
 }
 
 // Additional equipment-related functions can be added here.
